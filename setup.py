@@ -1,4 +1,3 @@
-
 #
 # PyNetlist is an open source framework
 # for object-oriented electrical circuit synthesis,
@@ -24,3 +23,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 #
+
+from distutils.core import setup
+setup(name='pyNetlist',
+        version='1.0',
+        description='Framework for object-oriented  circuit synthesis',
+        author='Jonathan Binas',
+        author_email='jbinas@gmail.com',
+        packages=['pyNetlist', 'pyNetlist.interfaces'],
+        )
