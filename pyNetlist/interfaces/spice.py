@@ -33,7 +33,7 @@ def netlist(circuit, dynamic_params=False):
                 prefix = p + '=' if len(params) else ''
                 if dynamic_params and dev[p] in circuit._params:
                     #use supercircuit param names
-                    param = prefix+circuit.params[circuit._params.index(dev[p])]
+                    param = prefix+'{'+circuit.params[circuit._params.index(dev[p])]+'}'
                     params.append(param)
                 elif dev[p].value is not None:
                     #optional parameters
