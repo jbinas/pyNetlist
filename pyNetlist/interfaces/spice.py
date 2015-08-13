@@ -10,12 +10,13 @@
 from pyNetlist.base import *
 
 
-def netlist(circuit, dynamic_params=False, use_subckt_ref=False):
+def netlist(circuit, dynamic_params=False):
     '''spice netlist generator'''
     out = ''
     subckts = []
     for devtype in circuit.devices.values():
         for dev in devtype:
+            subc_value = []
             ref_prefix = ''
             params = []
             is_subckt = True if dev.__class__.__name__=='Subcircuit' else False
@@ -29,15 +30,11 @@ def netlist(circuit, dynamic_params=False, use_subckt_ref=False):
             ref = [ref_prefix + dev.ref]
             ports = [p.ref for p in dev._ports]
             for p in dev.params:
-                prefix = ''
-                if is_subckt and use_subckt_ref:
-                    prefix += dev.circuit.ref + '_'
-                if len(params):
-                    prefix += p + '='
+                prefix = dev.circuit.ref+'_' if is_subckt else ''
+                prefix = prefix + p + '=' if len(params) else ''
                 if dynamic_params and dev[p] in circuit._params:
                     #use supercircuit param names
-                    ckt_ref = circuit.ref + '_' if use_subckt_ref else ''
-                    param = prefix + '{' + ckt_ref + \
+                    param = prefix + '{' + circuit.ref + '_' + \
                             circuit.params[circuit._params.index(dev[p])] + '}'
                     params.append(param)
                 elif dev[p].value is not None:
@@ -53,11 +50,10 @@ def netlist(circuit, dynamic_params=False, use_subckt_ref=False):
         params = []
         for p in c.params:
             value = c[p].value if c[p].value is not None else 'NULL'
-            ckt_ref = c.ref + '_' if use_subckt_ref else ''
-            params.append(ckt_ref + p + '=' + str(value))
+            params.append(c.ref + '_' + p + '=' + str(value))
         out += '.subckt %s ' % c.ref
         out += ' '.join(ports + params) + '\n'
-        out += netlist(c, dynamic_params=True, use_subckt_ref=use_subckt_ref)
+        out += netlist(c, dynamic_params=True)
         out += '.ends %s\n' % c.ref
     return out
 
