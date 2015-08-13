@@ -10,13 +10,12 @@
 from pyNetlist.base import *
 
 
-def netlist(circuit, dynamic_params=False):
+def netlist(circuit, dynamic_params=False, use_subckt_ref=False):
     '''spice netlist generator'''
     out = ''
     subckts = []
     for devtype in circuit.devices.values():
         for dev in devtype:
-            subc_value = []
             ref_prefix = ''
             params = []
             is_subckt = True if dev.__class__.__name__=='Subcircuit' else False
@@ -30,11 +29,15 @@ def netlist(circuit, dynamic_params=False):
             ref = [ref_prefix + dev.ref]
             ports = [p.ref for p in dev._ports]
             for p in dev.params:
-                prefix = dev.circuit.ref+'_' if is_subckt else ''
-                prefix = prefix + p + '=' if len(params) else ''
+                prefix = ''
+                if is_subckt and use_subckt_ref:
+                    prefix += dev.circuit.ref + '_'
+                if len(params):
+                    prefix += p + '='
                 if dynamic_params and dev[p] in circuit._params:
                     #use supercircuit param names
-                    param = prefix + '{' + circuit.ref + '_' + \
+                    ckt_ref = circuit.ref + '_' if use_subckt_ref else ''
+                    param = prefix + '{' + ckt_ref + \
                             circuit.params[circuit._params.index(dev[p])] + '}'
                     params.append(param)
                 elif dev[p].value is not None:
@@ -50,10 +53,11 @@ def netlist(circuit, dynamic_params=False):
         params = []
         for p in c.params:
             value = c[p].value if c[p].value is not None else 'NULL'
-            params.append(c.ref + '_' + p + '=' + str(value))
+            ckt_ref = c.ref + '_' if use_subckt_ref else ''
+            params.append(ckt_ref + p + '=' + str(value))
         out += '.subckt %s ' % c.ref
         out += ' '.join(ports + params) + '\n'
-        out += netlist(c, dynamic_params=True)
+        out += netlist(c, dynamic_params=True, use_subckt_ref=use_subckt_ref)
         out += '.ends %s\n' % c.ref
     return out
 
