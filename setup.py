@@ -26,7 +26,7 @@
 
 from distutils.core import setup
 setup(name='pyNetlist',
-        version='1.0',
+        version='0.2',
         description='Framework for object-oriented  circuit synthesis',
         author='Jonathan Binas',
         author_email='jbinas@gmail.com',
