@@ -1,6 +1,6 @@
 #
 # PyNetlist is an open source framework
-# for object-oriented electrical circuit synthesis,
+# for object-oriented electronic circuit synthesis,
 # published under the MIT License (MIT).
 #
 # Copyright (c) 2015 Jonathan Binas
@@ -17,23 +17,25 @@ def netlist(circuit, dynamic_params=False):
     for devtype in circuit.devices.values():
         for dev in devtype:
             subc_value = []
-            first_is_value= True
-            subc_prefix = ''
+            ref_prefix = ''
             params = []
-            if dev.__class__.__name__ == 'Subcircuit':
-                #TODO: find better way of testing for subcircuit
+            is_subckt = True if dev.__class__.__name__=='Subcircuit' else False
+            #TODO: find better way of testing for subcircuit
+            if is_subckt:
                 if dev.circuit not in subckts:
                     subckts.append(dev.circuit)
                 if dev.ref[0] not in ['x','X']:
-                    subc_prefix = 'X'
+                    ref_prefix = 'X'
                 params.append(dev.circuit.ref)
-            ref = [subc_prefix + dev.ref]
+            ref = [ref_prefix + dev.ref]
             ports = [p.ref for p in dev._ports]
             for p in dev.params:
-                prefix = p + '=' if len(params) else ''
+                prefix = dev.circuit.ref+'_' if is_subckt else ''
+                prefix = prefix + p + '=' if len(params) else ''
                 if dynamic_params and dev[p] in circuit._params:
                     #use supercircuit param names
-                    param = prefix+'{'+circuit.params[circuit._params.index(dev[p])]+'}'
+                    param = prefix + '{' + circuit.ref + '_' + \
+                            circuit.params[circuit._params.index(dev[p])] + '}'
                     params.append(param)
                 elif dev[p].value is not None:
                     #optional parameters
@@ -48,7 +50,7 @@ def netlist(circuit, dynamic_params=False):
         params = []
         for p in c.params:
             value = c[p].value if c[p].value is not None else 'NULL'
-            params.append(p + '=' + str(value))
+            params.append(c.ref + '_' + p + '=' + str(value))
         out += '.subckt %s ' % c.ref
         out += ' '.join(ports + params) + '\n'
         out += netlist(c, dynamic_params=True)

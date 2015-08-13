@@ -1,6 +1,6 @@
 #
 # PyNetlist is an open source framework
-# for object-oriented electrical circuit synthesis,
+# for object-oriented electronic circuit synthesis,
 # published under the MIT License (MIT).
 #
 # Copyright (c) 2015 Jonathan Binas
