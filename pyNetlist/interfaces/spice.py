@@ -69,6 +69,8 @@ def command(cmd, *args):
         [arg.ref if isinstance(arg, Device) else str(arg) for arg in args]))
 
 def wrdata(filename, fct, nodes):
+    if isinstance(nodes, Device):
+        nodes = [nodes]
     fcts = ' '.join([fct+'('+n.ref+')' for n in nodes])
     return command('wrdata', filename, fcts)[1:]
 
