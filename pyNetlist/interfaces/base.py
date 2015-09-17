@@ -10,11 +10,11 @@
 class File(object):
     def __init__(self, filename=None):
         self.data = ''
-	self.filename = filename
+        self.filename = filename
 
     def append(self, string):
         if not isinstance(string, str):
-	    raise TypeError('Only strings allowed.')
+            raise TypeError('Only strings allowed.')
         self.data += string
 
     def __repr__(self):
@@ -23,10 +23,10 @@ class File(object):
     def __str__(self):
         return self.__repr__()
 
-    def save(self, filename=None):
+    def write(self, filename=None):
         if filename is not None:
-	    self.filename = filename
-	if self.filename is None:
-	    raise ValueError('No filename specified.')
-	pass
-        #TODO: save data...
+            self.filename = filename
+        if self.filename is None:
+            raise ValueError('No filename specified.')
+        f = open(self.filename, 'w')
+        f.write(self.data)
