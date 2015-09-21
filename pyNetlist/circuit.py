@@ -66,13 +66,12 @@ class Circuit(Device):
                 self.devices[obj.type] = []
             devlist = self.devices[obj.type]
             if obj not in devlist:
-                if any([self.add(p) for p in obj._ports + obj._params]):
-                    return self.add(obj)
-                else:
-                    obj.id = self.maxid + 1
-                    devlist.append(obj)
-                    self.maxid = obj.id
-                    return obj
+                for p in obj._ports + obj._params:
+                    self.add(p)
+                obj.id = self.maxid + 1
+                devlist.append(obj)
+                self.maxid = obj.id
+                return obj
         return False
 
     def addArray(self, D, size=1, **kwargs):
@@ -86,7 +85,7 @@ class Circuit(Device):
                     if len(val)==size:
                         kwargs_new[key] = val[i]
                     else:
-                        raise IndexError('Dimension mismatch: %s.%s (%s, %s)' % (D.__name__, key, len(val), size))
+                        raise ValueError('Dimension mismatch: %s.%s (%s, %s)' % (D.__name__, key, len(val), size))
                 else:
                     kwargs_new[key] = val
             devices.append(self.addNode(D, **kwargs_new))
