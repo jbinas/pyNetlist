@@ -22,8 +22,8 @@ class Circuit(Device):
     def post_init(self, **kwargs):
         import interfaces
         self.devices = {}
-        self.nets = []
-        self.parameters = []
+        self.nets = set()
+        self.parameters = set()
         self.maxid = 0
         self.maxid_nets = 0
         self.maxid_params = 0
@@ -52,24 +52,24 @@ class Circuit(Device):
                 return #ignore global nets
             if obj not in self.nets:
                 obj.id = self.maxid_nets + 1
-                self.nets.append(obj)
+                self.nets.add(obj)
                 self.maxid_nets = obj.id
                 return obj
         elif obj.type is Param:
             if obj not in self.parameters:
                 obj.id = self.maxid_params + 1
-                self.parameters.append(obj)
+                self.parameters.add(obj)
                 self.maxid_params = obj.id
                 return obj
         else: #obj is device
             if obj.type not in self.devices:
-                self.devices[obj.type] = []
+                self.devices[obj.type] = set()
             devlist = self.devices[obj.type]
             if obj not in devlist:
                 for p in obj._ports + obj._params:
                     self.add(p)
                 obj.id = self.maxid + 1
-                devlist.append(obj)
+                devlist.add(obj)
                 self.maxid = obj.id
                 return obj
         return False
