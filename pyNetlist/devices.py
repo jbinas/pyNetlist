@@ -32,11 +32,11 @@ class C(Device):
 class NMOS(Device):
     name = 'M'
     ports = ['d', 'g', 's', 'b']
-    params = ['model', 'l', 'w', 'm']
+    params = ['model', 'l', 'w', 'm', 'delvto']
 
 
 class PMOS(Device):
     name = 'M'
     ports = ['d', 'g', 's', 'b']
-    params = ['model', 'l', 'w', 'm']
+    params = ['model', 'l', 'w', 'm', 'delvto']
 

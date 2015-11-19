@@ -20,15 +20,12 @@ class Circuit(Device):
         super(Circuit, self).parseargs(**kwargs)
 
     def post_init(self, **kwargs):
-        import interfaces
         self.devices = {}
         self.nets = set()
         self.parameters = set()
         self.maxid = 0
         self.maxid_nets = 0
         self.maxid_params = 0
-        self.header = ''
-        self.footer = ''
         for p in self._params: #index parameters
             self.add(p)
         class Subcircuit(Device):
