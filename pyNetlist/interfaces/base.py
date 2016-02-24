@@ -30,3 +30,4 @@ class File(object):
             raise ValueError('No filename specified.')
         f = open(self.filename, 'w')
         f.write(self.data)
+        f.close()
