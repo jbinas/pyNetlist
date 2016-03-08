@@ -14,8 +14,9 @@ def netlist(circuit, dynamic_params=False, use_subckt_ref=False):
     '''spice netlist generator'''
     out = ''
     subckts = []
-    for devtype in circuit.devices.values():
-        for dev in devtype:
+    devtypes = sorted(circuit.devices, key=lambda k: (k.__name__, k.name))
+    for devtype in devtypes:
+        for dev in sorted(circuit.devices[devtype], key=lambda k: k.id):
             ref_prefix = ''
             params = []
             is_subckt = True if dev.__class__.__name__=='Subcircuit' else False
@@ -37,8 +38,8 @@ def netlist(circuit, dynamic_params=False, use_subckt_ref=False):
                 if dynamic_params and dev[p] in circuit._params:
                     #use supercircuit param names
                     ckt_ref = circuit.ref + '_' if use_subckt_ref else ''
-                    param = prefix + '{' + ckt_ref + \
-                            circuit.params[circuit._params.index(dev[p])] + '}'
+                    param = prefix + ckt_ref + \
+                            circuit.params[circuit._params.index(dev[p])]
                     params.append(param)
                 elif dev[p].value is not None:
                     #optional parameters
