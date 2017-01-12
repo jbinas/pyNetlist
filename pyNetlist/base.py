@@ -47,7 +47,12 @@ class BaseObjList(object):
         return self.elements.__iter__()
 
     def __getitem__(self, val):
-        return self.elements[val]
+        if isinstance(val, list):
+            return self.__class__([self[i] for i in val])
+        elif isinstance(val, (int, slice)):
+            return self.elements[val]
+        else:
+            raise TypeError('Unsupported index type: %s' % val.__class__.__name__)
 
 
 class DeviceList(BaseObjList):
